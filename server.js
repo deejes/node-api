@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS [Users] (
   	[LastName] NVARCHAR(50) NOT NULL, 
 	[Email] NVARCHAR(50) NOT NULL, 
   	[Address] NVARCHAR(50) NOT NULL, 
+    [Version] INTEGER DEFAULT 0,
 	[Deleted] INTEGER DEFAULT 0 
   )
   `,
