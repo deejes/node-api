@@ -38,7 +38,6 @@ CREATE TABLE IF NOT EXISTS [Users] (
 
 
 // close database
-
 function closeDB() {
     db.close((err) => {
       if (err) {
@@ -59,11 +58,10 @@ app.get('/listUsers', function (req, res) {
    
    let sql = `SELECT * FROM Users`;
    
-   db.each(sql,[], (err, result) => {
-      // process each row here
-      console.log(result)
+   db.all(sql,[], (err, rows) => {
+      // send entire table as response
+      res.send(rows);
    });
-   res.end('');
    
 })
 
@@ -76,9 +74,8 @@ app.get('/:id', function (req, res) {
         sql = `SELECT * FROM users WHERE userID="` + id + `" AND Version="` + req.body.Version+ `"`;
     }
     db.each(sql,[], (err, result) => {
-        console.log(result)
+        res.send(result);
      });
-    res.end('');
 
  })
 
@@ -148,7 +145,7 @@ app.post('/:id', function (req, res) {
        console.log(`A row has been inserted with rowid ${this.lastID}`);
        });
      });
-    res.end() 
+    res.end("User successfully updated") 
  })
 
 // delete a user by id
