@@ -141,13 +141,35 @@ app.post('/:id', function (req, res) {
 
 // delete a user by id
 app.delete('/:id', function (req, res) {
-    // TODO
+
    let id = req.params.id
    let sql = `SELECT * FROM users WHERE userID="`+id+'" ORDER BY VERSION DESC LIMIT 1';
 
-   // find latest object with id
-   // if null, return
-   // if deleted, say already deleted
-   // if not deleted, delete and return error message
+   db.all(sql, [], (err, rows) => {
+      if (err) {
+        throw err;
+      }
+      console.log(rows.length);
+      if (rows.length === 0){
+         res.end("Could not find the user you're trying to delete")
+      }
 
- })
+      result = rows[0];
+      if (result.Deleted === 1){
+         res.end("The user has already been deleted")
+      }
+
+      else {
+         let sql_update =  `UPDATE users SET Deleted=1 WHERE Id="`+result.Id+'"';
+         db.run(sql_update, [], function(err) {
+         if (err) {
+            res.end("User could not be deleted " + err.message);
+            return console.error(err.message);
+         }
+         res.end("User with id " +id +" has been deleted")
+         console.log(`Row(s) updated: ${this.changes}`);
+      });
+    }
+
+ });
+})
