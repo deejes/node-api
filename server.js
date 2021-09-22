@@ -3,7 +3,7 @@ const e = require('express');
 var express = require('express');
 var app = express();
 var fs = require("fs");
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4, validate } = require('uuid');
 
 app.use(express.json()); 
 
@@ -86,6 +86,12 @@ app.get('/:id', function (req, res) {
 app.post('/createUser', function (req, res) {
     let defaultVersion = 1;
     let uid = uuidv4();
+    if (validateInputs(req.body) != true){
+       res.status(400);
+       res.end("Input Error: " + validateInputs(req.body))
+       return
+    };
+
     let reqVals = [uid,req.body.firstName,req.body.lastName,req.body.email,req.body.address,defaultVersion]
     db.run(`INSERT INTO users(UserID,firstName,lastName,email,address,version) VALUES(?,?, ? ,?, ?,?);`,reqVals,  function(err) {
 
@@ -101,6 +107,12 @@ app.post('/createUser', function (req, res) {
 
  // update a user
 app.post('/:id', function (req, res) {
+
+   if (validateInputs(req.body) != true){
+      res.status(400);
+      res.end("Input Error: " + validateInputs(req.body))
+      return
+   };
 
     // find most recent record
     let id = req.params.id
@@ -173,3 +185,20 @@ app.delete('/:id', function (req, res) {
 
  });
 })
+
+
+function validateInputs(body) {
+   if (typeof(body.firstName) != 'string' ){
+      return ("First Name has to be a string")
+   }
+   if (typeof(body.lastName) != 'string' ){
+      return ("Last Name has to be a string")
+   }
+   if (typeof(body.email) != 'string' ){
+      return ("Email has to be a string")
+   }
+   if (typeof(body.address) != 'string' ){
+      return ("Address has to be a string")
+   }
+   return true;
+};
