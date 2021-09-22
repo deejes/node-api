@@ -1,6 +1,8 @@
+const { json } = require('express');
 var express = require('express');
 var app = express();
 var fs = require("fs");
+app.use(express.json()); 
 
 // initialize database
 const sqlite3 = require('sqlite3').verbose();
@@ -50,6 +52,7 @@ app.get('/listUsers', function (req, res) {
         // process each row here
         console.log(result)
      });
+    res.end('');
 
 })
 
@@ -62,15 +65,18 @@ var server = app.listen(8081, function () {
 
  
  app.post('/addUser', function (req, res) {
-    db.run(`INSERT INTO users(firstName,lastName,email,address) VALUES('a','v','d','s');`,  function(err) {
+
+    let reqVals = [req.body.firstName,req.body.lastName,req.body.email,req.body.address]
+
+    db.run(`INSERT INTO users(firstName,lastName,email,address) VALUES(?, ? ,?, ?);`,reqVals,  function(err) {
     if (err) {
       return console.log(err.message);
     }
     // get the last insert id
     console.log(`A row has been inserted with rowid ${this.lastID}`);
     });
-    res.end("ASD");
-    closeDB();
+    
+    res.end() 
  })
 
  app.get('/:id', function (req, res) {
