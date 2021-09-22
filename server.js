@@ -48,28 +48,42 @@ function closeDB() {
     });
 }
 
-
-app.get('/listUsers', function (req, res) {
-
-    let sql = `SELECT * FROM Users`;
-
-    db.each(sql,[], (err, result) => {
-        // process each row here
-        console.log(result)
-     });
-    res.end('');
-
-})
-
 var server = app.listen(8081, function () {
    var host = server.address().address
    var port = server.address().port
    console.log("I'm listening at http://%s:%s", host, port)
 })
 
+// get all users
+app.get('/listUsers', function (req, res) {
+   
+   let sql = `SELECT * FROM Users`;
+   
+   db.each(sql,[], (err, result) => {
+      // process each row here
+      console.log(result)
+   });
+   res.end('');
+   
+})
 
- 
- app.post('/createUser', function (req, res) {
+// get a user by id and optional version number
+app.get('/:id', function (req, res) {
+    id = req.params.id
+    if ( !req.body.Version ){
+         sql = `SELECT * FROM users WHERE userID="`+id+'" ORDER BY VERSION DESC LIMIT 1';
+    } else{
+        sql = `SELECT * FROM users WHERE userID="` + id + `" AND Version="` + req.body.Version+ `"`;
+    }
+    db.each(sql,[], (err, result) => {
+        console.log(result)
+     });
+    res.end('');
+
+ })
+
+// create new user
+app.post('/createUser', function (req, res) {
     let defaultVersion = 1;
     let uid = uuidv4();
     let reqVals = [uid,req.body.firstName,req.body.lastName,req.body.email,req.body.address,defaultVersion]
@@ -85,7 +99,7 @@ var server = app.listen(8081, function () {
     res.end(uid) 
  })
 
-
+ // update a user
 app.post('/:id', function (req, res) {
 
     // find most recent record
@@ -146,21 +160,8 @@ app.post('/:id', function (req, res) {
     res.end() 
  })
 
- app.get('/:id', function (req, res) {
-    id = req.params.id
-    if ( !req.body.Version ){
-         sql = `SELECT * FROM users WHERE userID="`+id+'" ORDER BY VERSION DESC LIMIT 1';
-    } else{
-        sql = `SELECT * FROM users WHERE userID="` + id + `" AND Version="` + req.body.Version+ `"`;
-    }
-    db.each(sql,[], (err, result) => {
-        console.log(result)
-     });
-    res.end('');
-
- })
-
- app.delete('/deleteUser', function (req, res) {
+// delete a user by id
+app.delete('/deleteUser', function (req, res) {
     // TODO
 
  })
