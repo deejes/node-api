@@ -83,8 +83,18 @@ var server = app.listen(8081, function () {
     res.end(uid) 
  })
 
+
  app.get('/:id', function (req, res) {
     // First read existing users.
+    id = req.params.id
+    console.log(id);
+    let sql = `SELECT * FROM users WHERE userID="`+id+'"';
+    db.each(sql,[], (err, result) => {
+        // process each row here
+        console.log(result)
+     });
+    res.end('');
+
     fs.readFile( __dirname + "/" + "users.json", 'utf8', function (err, data) {
        var users = JSON.parse( data );
        var user = users["user" + req.params.id] 
