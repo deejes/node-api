@@ -147,13 +147,13 @@ app.post('/:id', function (req, res) {
  })
 
  app.get('/:id', function (req, res) {
-    // First read existing users.
     id = req.params.id
-    console.log(id);
-    let sql = `SELECT * FROM users WHERE userID="`+id+'" ORDER BY VERSION DESC LIMIT 1';
-
+    if ( !req.body.Version ){
+         sql = `SELECT * FROM users WHERE userID="`+id+'" ORDER BY VERSION DESC LIMIT 1';
+    } else{
+        sql = `SELECT * FROM users WHERE userID="` + id + `" AND Version="` + req.body.Version+ `"`;
+    }
     db.each(sql,[], (err, result) => {
-        // process each row here
         console.log(result)
      });
     res.end('');
@@ -161,12 +161,6 @@ app.post('/:id', function (req, res) {
  })
 
  app.delete('/deleteUser', function (req, res) {
-    // First read existing users.
-    fs.readFile( __dirname + "/" + "users.json", 'utf8', function (err, data) {
-       data = JSON.parse( data );
-       delete data["user" + 2];
-        
-       console.log( data );
-       res.end( JSON.stringify(data));
-    });
+    // TODO
+
  })
