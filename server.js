@@ -4,21 +4,37 @@ var fs = require("fs");
 
 // initialize database
 const sqlite3 = require('sqlite3').verbose();
-let db = new sqlite3.Database(':memory:', (err) => {
-    if (err) {
+// let db = new sqlite3.Database(':memory:', (err) => {
+//     if (err) {
+//       return console.error(err.message);
+//     }    
+//     console.log('Connected to the in-memory SQlite database.');
+//   });
+
+let db = new sqlite3.Database('./db/sample.db', (err) => {
+        if (err) {
       return console.error(err.message);
     }    
-    console.log('Connected to the in-memory SQlite database.');
-  });
+    console.log('Connected to the SQlite database.'); 
+});
+
+db.run('CREATE TABLE langs(name text)',(err)=> {
+    if (err) {
+        return console.error(err.message);
+      }    
+});
 
 
 // close database
-  db.close((err) => {
-    if (err) {
-      return console.error(err.message);
-    }
-    console.log('Close the database connection.');
-  });
+
+function closeDB() {
+    db.close((err) => {
+      if (err) {
+        return console.error(err.message);
+      }
+      console.log('Close the database connection.');
+    });
+}
 
 
 app.get('/listUsers', function (req, res) {
@@ -39,12 +55,14 @@ var server = app.listen(8081, function () {
  
  app.post('/addUser', function (req, res) {
     // First read existing users.
-    fs.readFile( __dirname + "/" + "users.json", 'utf8', function (err, data) {
-       data = JSON.parse( data );
-       data["user4"] = user["user4"];
-       console.log( data );
-       res.end( JSON.stringify(data));
-    });
+    // fs.readFile( __dirname + "/" + "users.json", 'utf8', function (err, data) {
+    //    data = JSON.parse( data );
+    //    data["user4"] = user["user4"];
+    //    console.log( data );
+    //    res.end( JSON.stringify(data));
+// });
+    res.end("ASD");
+    closeDB();
  })
 
  app.get('/:id', function (req, res) {
