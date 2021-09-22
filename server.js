@@ -113,14 +113,14 @@ app.post('/:id', function (req, res) {
         let primaryid = result.Id
        
        
-        // mark previous entry inactive
-        let sql_update =  `UPDATE users SET Active=0 WHERE Id="`+primaryid+'"';
-        db.run(sql_update, [], function(err) {
+      // mark previous entry inactive
+         let sql_update =  `UPDATE users SET Active=0 WHERE Id="`+primaryid+'"';
+         db.run(sql_update, [], function(err) {
          if (err) {
-           return console.error(err.message);
+            return console.error(err.message);
          }
          console.log(`Row(s) updated: ${this.changes}`);
-       
+         
        });
 
       // create new entry
@@ -135,33 +135,19 @@ app.post('/:id', function (req, res) {
        // get the last insert id
        console.log(`A row has been inserted with rowid ${this.lastID}`);
        });
-   
-      //  res.end(uid) 
-
-
      });
-
-    // create new record
-    // set userId = id
-    // set version = old version +1 
-
-
-
-    // let reqVals = [uid,req.body.firstName,req.body.lastName,req.body.email,req.body.address,defaultVersion]
-    // db.run(`INSERT INTO users(UserID,firstName,lastName,email,address,version) VALUES(?,?, ? ,?, ?,?);`,reqVals,  function(err) {
-
-    // if (err) {
-    //   return console.log(err.message);
-    // }
-    // // get the last insert id
-    // console.log(`A row has been inserted with rowid ${this.lastID}`);
-    // });
-
     res.end() 
  })
 
 // delete a user by id
-app.delete('/deleteUser', function (req, res) {
+app.delete('/:id', function (req, res) {
     // TODO
+   let id = req.params.id
+   let sql = `SELECT * FROM users WHERE userID="`+id+'" ORDER BY VERSION DESC LIMIT 1';
+
+   // find latest object with id
+   // if null, return
+   // if deleted, say already deleted
+   // if not deleted, delete and return error message
 
  })
