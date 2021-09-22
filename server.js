@@ -20,13 +20,13 @@ let db = new sqlite3.Database('./db/user_db.db', (err) => {
 db.run(`
 CREATE TABLE IF NOT EXISTS [Users] (  
 	[Id] INTEGER PRIMARY KEY NOT NULL,
-    [UserID] NVARCHAR(50) NOT NULL,
+   [UserID] NVARCHAR(50) NOT NULL,
 	[FirstName] NVARCHAR(50) NOT NULL, 
   	[LastName] NVARCHAR(50) NOT NULL, 
 	[Email] NVARCHAR(50) NOT NULL, 
   	[Address] NVARCHAR(50), 
-    [Version] INTEGER DEFAULT 0 NOT NULL,
-    [Active] INTEGER DEFAULT 1, 
+   [Version] INTEGER DEFAULT 0 NOT NULL,
+   [Active] INTEGER DEFAULT 1, 
 	[Deleted] INTEGER DEFAULT 0 
   )
   `,
