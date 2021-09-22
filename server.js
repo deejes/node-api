@@ -2,6 +2,8 @@ const { json } = require('express');
 var express = require('express');
 var app = express();
 var fs = require("fs");
+const { v4: uuidv4 } = require('uuid');
+
 app.use(express.json()); 
 
 // initialize database
@@ -17,11 +19,12 @@ let db = new sqlite3.Database('./db/user_db.db', (err) => {
 db.run(`
 CREATE TABLE IF NOT EXISTS [Users] (  
 	[Id] INTEGER  PRIMARY KEY NOT NULL,
+    [UserID] NVARCHAR(50) NOT NULL,
 	[FirstName] NVARCHAR(50) NOT NULL, 
   	[LastName] NVARCHAR(50) NOT NULL, 
 	[Email] NVARCHAR(50) NOT NULL, 
-  	[Address] NVARCHAR(50) NOT NULL, 
-    [Version] INTEGER DEFAULT 0,
+  	[Address] NVARCHAR(50), 
+    [Version] INTEGER DEFAULT 0 NOT NULL,
 	[Deleted] INTEGER DEFAULT 0 
   )
   `,
@@ -59,24 +62,25 @@ app.get('/listUsers', function (req, res) {
 var server = app.listen(8081, function () {
    var host = server.address().address
    var port = server.address().port
-   console.log("Example app listening at http://%s:%s", host, port)
+   console.log("I'm listening at http://%s:%s", host, port)
 })
 
 
  
  app.post('/addUser', function (req, res) {
+    let defaultVersion = 1;
+    let uid = uuidv4();
+    let reqVals = [uid,req.body.firstName,req.body.lastName,req.body.email,req.body.address,defaultVersion]
+    db.run(`INSERT INTO users(UserID,firstName,lastName,email,address,version) VALUES(?,?, ? ,?, ?,?);`,reqVals,  function(err) {
 
-    let reqVals = [req.body.firstName,req.body.lastName,req.body.email,req.body.address]
-
-    db.run(`INSERT INTO users(firstName,lastName,email,address) VALUES(?, ? ,?, ?);`,reqVals,  function(err) {
     if (err) {
       return console.log(err.message);
     }
     // get the last insert id
     console.log(`A row has been inserted with rowid ${this.lastID}`);
     });
-    
-    res.end() 
+
+    res.end(uid) 
  })
 
  app.get('/:id', function (req, res) {
